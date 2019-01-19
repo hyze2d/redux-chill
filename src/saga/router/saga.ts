@@ -11,7 +11,7 @@ class RouterSaga {
    * Get dependencies
    */
   public constructor(
-    @inject(History) public history: History,
+    @inject('history') public history: History,
     @inject(SagaHelpers) public helpers: SagaHelpers,
     @inject(SagaEffects) public effects: SagaEffects
   ) {}
