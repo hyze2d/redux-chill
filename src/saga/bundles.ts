@@ -1,10 +1,36 @@
-import { buffers, channel, delay, eventChannel, takeEvery, takeLatest, throttle } from "redux-saga";
-import { actionChannel, apply, call, cancel, cancelled, cps, flush, fork, getContext, join, put, select, setContext, spawn, take } from "redux-saga/effects";
+import {
+  buffers,
+  channel,
+  delay,
+  eventChannel,
+  takeEvery,
+  takeLatest,
+  throttle
+} from "redux-saga";
+import {
+  actionChannel,
+  apply,
+  call,
+  cancel,
+  cancelled,
+  cps,
+  flush,
+  fork,
+  getContext,
+  join,
+  put,
+  select,
+  setContext,
+  spawn,
+  take
+} from "redux-saga/effects";
 import { cloneableGenerator, createMockTask } from "redux-saga/utils";
+import { injectable } from "inversify";
 
 /**
  * Effected bundle
  */
+@injectable()
 class SagaEffects {
   public take = take;
   public put = put;
@@ -26,6 +52,7 @@ class SagaEffects {
 /**
  * Saga helpers
  */
+@injectable()
 class SagaHelpers {
   public takeEvery = takeEvery;
   public takeLatest = takeLatest;
@@ -35,6 +62,7 @@ class SagaHelpers {
 /**
  * Saga utils bundle
  */
+@injectable()
 class SagaUtils {
   public channel = channel;
   public eventChannel = eventChannel;
@@ -45,4 +73,3 @@ class SagaUtils {
 }
 
 export { SagaEffects, SagaHelpers, SagaUtils };
-

@@ -1,5 +1,5 @@
 import { make } from "../../actions";
-import { LocationDescriptorObject } from "history";
+import { LocationDescriptorObject, Location } from "history";
 /**
  * Init router with start location
  */
