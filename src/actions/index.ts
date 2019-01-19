@@ -13,11 +13,8 @@ type ActionCreator<C extends Func> = { type: string } & ((
 /**
  * Create action
  */
-const make = <C extends Func, T>(
-  type: string,
-  create?: C,
-  stages: T = {} as T
-) => {
+// extends { [name: string]: Func } = any
+const make = <C extends Func, T>(type: string, create?: C, stages?: T) => {
   /**
    * Initial action
    */
@@ -43,8 +40,11 @@ const make = <C extends Func, T>(
 
   return result as Function &
     ActionCreator<C> &
-    // @ts-ignore
-    { [P in keyof T]: ActionCreator<T[P]> };
+    { [P in keyof T]: ActionCreator<Func & T[P]> };
 };
 
 export { make };
+
+// const get = make("dsa", (name: string) => ({ name }), {
+//   success: (kek: number) => ({ kek })
+// });
