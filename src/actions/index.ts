@@ -13,7 +13,7 @@ type ActionCreator<C extends Func> = { type: string } & ((
 /**
  * Create action
  */
-const make = <C extends Func, T extends { [name: string]: Func }>(
+const make = <C extends Func, T>(
   type: string,
   create?: C,
   stages: T = {} as T
@@ -43,6 +43,7 @@ const make = <C extends Func, T extends { [name: string]: Func }>(
 
   return result as Function &
     ActionCreator<C> &
+    // @ts-ignore
     { [P in keyof T]: ActionCreator<T[P]> };
 };
 
