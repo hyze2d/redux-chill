@@ -4,7 +4,7 @@
     "dist"
   ],
   "name": "redux-chill",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "<h1 align='center'> \tRedux Chill </h1>",
   "dependencies": {
     "history": "^4.7.2",

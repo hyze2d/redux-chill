@@ -13,8 +13,7 @@ type ActionCreator<C extends Func> = { type: string } & ((
 /**
  * Create action
  */
-// extends { [name: string]: Func } = any
-const make = <C extends Func, T>(type: string, create?: C, stages?: T) => {
+function make<C extends Func, T>(type: string, create?: C, stages?: T) {
   /**
    * Initial action
    */
@@ -29,11 +28,11 @@ const make = <C extends Func, T>(type: string, create?: C, stages?: T) => {
    */
   result.type = type;
 
-  Object.keys(stages).map(key => {
+  Object.keys(stages || {}).map(key => {
     const subType = type + " " + key;
     result[key] = (...args) => ({
       type: subType,
-      payload: stages[key](...args)
+      payload: stages[key] ? stages[key](...args) : null
     });
     result[key].type = subType;
   });
@@ -41,10 +40,6 @@ const make = <C extends Func, T>(type: string, create?: C, stages?: T) => {
   return result as Function &
     ActionCreator<C> &
     { [P in keyof T]: ActionCreator<Func & T[P]> };
-};
+}
 
 export { make };
-
-// const get = make("dsa", (name: string) => ({ name }), {
-//   success: (kek: number) => ({ kek })
-// });
