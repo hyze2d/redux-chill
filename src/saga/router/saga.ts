@@ -2,7 +2,6 @@ import { takeEvery } from "redux-saga/effects";
 import { navigate } from "./actions";
 import { History } from "history";
 import { injectable, inject } from "inversify";
-import { SagaHelpers, SagaEffects } from "../bundles";
 import { Saga } from "../saga";
 
 @injectable()
@@ -10,11 +9,7 @@ class RouterSaga {
   /**
    * Get dependencies
    */
-  public constructor(
-    @inject('history') public history: History,
-    @inject(SagaHelpers) public helpers: SagaHelpers,
-    @inject(SagaEffects) public effects: SagaEffects
-  ) {}
+  public constructor(@inject("history") public history: History) {}
   /**
    * Push path
    */
