@@ -1,68 +1,49 @@
-type PayloadCreator<T = any, P extends any[] = any> = (...args: P) => T;
-type StagesList = string[];
-type Stages = {
-  [x: string]: PayloadCreator;
-};
+import { HashMap, Func, StagesList, MakeResult, ActionCreator } from "./types";
 
-type Action<P = any> = {
-  type: string;
-  payload?: P;
-};
-type ActionCreator<PC extends PayloadCreator> = ((
-  ...args: Parameters<PC>
-) => Action<ReturnType<PC>>) & {
-  type: string;
-};
-
-type PayloadCreatorMap = {
-  [x: string]: PayloadCreator;
-};
-
-type MakeResult<
-  PC extends PayloadCreator = any,
-  S extends PayloadCreatorMap = any,
-  SL = any
-> = ActionCreator<PC> & { [P in keyof S]: ActionCreator<ReturnType<S[P]>> };
+/**
+ * Stages map
+ */
+type Stages = HashMap<Func>;
+/**
+ * 2-4 params
+ */
+type OptionalParams = Stages | Func | StagesList;
 
 /**
  * Get stages object from args
  */
-const getStages = (...args: (Stages | PayloadCreator | StagesList)[]) => {
+const getStages = (...args: (OptionalParams)[]) => {
   return args.find(item => typeof item == "object" && !Array.isArray(item));
 };
 
 /**
  * Get stages names list from args
  */
-const getStagesList = (...args: (Stages | PayloadCreator | StagesList)[]) =>
-  args.find(Array.isArray);
+const getStagesList = (...args: (OptionalParams)[]) => args.find(Array.isArray);
 
 function make(name: string): MakeResult;
-function make<P>(
-  name: string,
-  initial: PayloadCreator<P>
-): MakeResult<typeof initial>;
+function make<P extends Func>(name: string, initial: P): MakeResult<P>;
 function make<S extends Stages>(name: string, stages: S): MakeResult<any, S>;
-function make<SL extends StagesList>(
+function make<SL extends any[]>(
   name: string,
-  stages: SL
+  stagesList: SL
 ): MakeResult<any, any, SL>;
-function make<P, S extends Stages>(
+function make<P extends Func, S extends Stages>(
   name: string,
-  initial: PayloadCreator<P>,
-  stages: Stages
-): MakeResult<PayloadCreator<P>, S>;
-function make<P, SL extends StagesList>(
+  initial: P,
+  stages: S
+): MakeResult<P, S>;
+function make<P extends Func, SL extends StagesList>(
   name: string,
-  initial: PayloadCreator,
+  initial: P,
   stages: SL
-): MakeResult<PayloadCreator<P>, any, SL>;
-function make<P, S extends Stages, SL extends StagesList>(
+): MakeResult<P, any, SL>;
+function make<P extends Func, S extends Stages, SL extends any[]>(
   name: string,
-  initial: PayloadCreator<P>,
+  initial: P,
   stages: S,
   stagesList: SL
-): MakeResult<PayloadCreator<P>, S, SL>;
+): MakeResult<P, S, SL>;
 function make<S extends Stages>(name: string, stages: S): MakeResult<any, S>;
 function make<SL extends StagesList>(
   name: string,
@@ -76,7 +57,7 @@ function make<S extends Stages, SL extends StagesList>(
 
 function make(
   name: string,
-  second?: PayloadCreator | StagesList | Stages,
+  second?: Func | StagesList | Stages,
   third?: StagesList | Stages,
   fourth?: StagesList
 ) {
@@ -125,4 +106,7 @@ function make(
   return create as any;
 }
 
-const dsad = make("dsad", (kek: number) => kek);
+const kekCtion = make("[kek] some action", (test: Error) => test, {
+  finish: (lol: string) => lol,
+  success: (kek: number, cheburek: Symbol) => ({ kek, cheburek })
+});
