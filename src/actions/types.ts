@@ -34,7 +34,7 @@ type HashMap<T> = {
 type MakeResult<
   InitialCreator extends Func = any,
   StagesHashMap extends HashMap<Func> = any,
-  Stages extends ReadonlyArray<string | number> = any
+  Stages extends ReadonlyArray<string | number> = any[]
 > = ActionCreator<InitialCreator> &
   { [P in keyof StagesHashMap]: ActionCreator<StagesHashMap[P]> } &
   { [K in Stages[number]]: ActionCreator<any> };

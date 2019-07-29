@@ -21,50 +21,50 @@ const getStages = (...args: (OptionalParams)[]) => {
  */
 const getStagesList = (...args: (OptionalParams)[]) => args.find(Array.isArray);
 
+type StageNames = ReadonlyArray<string | number>;
+
 function make(name: string): MakeResult;
 function make<P extends Func>(name: string, initial: P): MakeResult<P>;
 function make<S extends Stages>(name: string, stages: S): MakeResult<any, S>;
-function make<SL extends StagesList>(
+function make<SL extends StageNames>(
   name: string,
-  stagesList: SL
+  ...args: SL
 ): MakeResult<any, any, SL>;
 function make<P extends Func, S extends Stages>(
   name: string,
   initial: P,
   stages: S
 ): MakeResult<P, S>;
-function make<P extends Func, SL extends StagesList>(
+function make<P extends Func, SL extends StageNames>(
   name: string,
   initial: P,
-  stages: SL
+  ...args: SL
 ): MakeResult<P, any, SL>;
-function make<P extends Func, S extends Stages, SL extends StagesList>(
+function make<P extends Func, S extends Stages, SL extends StageNames>(
   name: string,
   initial: P,
   stages: S,
-  stagesList: SL
+  ...args: SL
 ): MakeResult<P, S, SL>;
 function make<S extends Stages>(name: string, stages: S): MakeResult<any, S>;
-function make<SL extends StagesList>(
+function make<SL extends StageNames>(
   name: string,
-  stagesList: SL
+  ...args: SL
 ): MakeResult<any, any, SL>;
-function make<S extends Stages, SL extends StagesList>(
+function make<S extends Stages, SL extends StageNames>(
   name: string,
   stages: S,
-  stagesList: SL
+  ...args: SL
 ): MakeResult<any, S, SL>;
-
 function make(
   name: string,
   second?: Func | StagesList | Stages,
   third?: StagesList | Stages,
-  fourth?: StagesList
+  ...args: StageNames
 ) {
   const createPayload = typeof second == "function" && second;
-  const stages = getStages(second, third, fourth);
-  const stagesList = getStagesList(second, third, fourth);
-
+  const stages = getStages(second, third, args);
+  const stagesList = getStagesList(second, third, args);
   const create = function(...args) {
     return {
       type: name,
@@ -106,12 +106,4 @@ function make(
   return create as any;
 }
 
-const test = make(
-  "name",
-  (arg: any) => arg,
-  {
-    stage: (arg: string) => arg,
-    otherStage: (arg: number) => arg
-  },
-  ["andAnotherStage"] as const
-);
+const kek = make("kek", "ch", "ll");
