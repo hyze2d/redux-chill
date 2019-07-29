@@ -24,7 +24,7 @@ const getStagesList = (...args: (OptionalParams)[]) => args.find(Array.isArray);
 function make(name: string): MakeResult;
 function make<P extends Func>(name: string, initial: P): MakeResult<P>;
 function make<S extends Stages>(name: string, stages: S): MakeResult<any, S>;
-function make<SL extends any[]>(
+function make<SL extends StagesList>(
   name: string,
   stagesList: SL
 ): MakeResult<any, any, SL>;
@@ -38,7 +38,7 @@ function make<P extends Func, SL extends StagesList>(
   initial: P,
   stages: SL
 ): MakeResult<P, any, SL>;
-function make<P extends Func, S extends Stages, SL extends any[]>(
+function make<P extends Func, S extends Stages, SL extends StagesList>(
   name: string,
   initial: P,
   stages: S,
@@ -106,7 +106,12 @@ function make(
   return create as any;
 }
 
-const kekCtion = make("[kek] some action", (test: Error) => test, {
-  finish: (lol: string) => lol,
-  success: (kek: number, cheburek: Symbol) => ({ kek, cheburek })
-});
+const test = make(
+  "name",
+  (arg: any) => arg,
+  {
+    stage: (arg: string) => arg,
+    otherStage: (arg: number) => arg
+  },
+  ["andAnotherStage"] as const
+);
