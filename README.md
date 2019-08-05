@@ -68,7 +68,7 @@ const defaultState = {
 };
 
 // reducer takes single argument - defaultState which will be used as default value for first agument and for argument typisation
-const someReducer = reducer(defaultState);
+const someReducer = reducer(defaultState)
             // with on you define handlers for specific action creator
             // because parts of library targeted to work together, first argument requires function which returns { type, payload } and has .type field for matching so we take example from above of action creator made with make()
             // second argument will be action.payload to get rid of unneeded "action.payload" or { payload }

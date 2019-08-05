@@ -35,7 +35,7 @@ const run = (middleware: SagaMiddleware, sagas: Object[], context?: any) => {
       if (effect) {
         result.push(function*() {
           yield (effect as any)(pattern, function*(action) {
-            return yield call(method.bind(saga), action.payload);
+            return yield call(method.bind(saga), action.payload, context);
           });
         });
       } else {
