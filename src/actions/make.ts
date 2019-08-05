@@ -42,8 +42,6 @@ const build = <S extends FuncMap>(params: Params<S>): Build<S> => <
 
   });
 
-  // console.log(result['success'], 'STAGED')
-
   return result;
 };
 
