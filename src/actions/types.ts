@@ -1,42 +1,78 @@
 /**
- * Any function
+ * Object with fields typed by passed type
+ */
+type HashMap<T> = { [x: string]: T };
+/**
+ * Simple function
  */
 type Func = (...args) => any;
-
 /**
- * Action type
+ * Function hash map
+ */
+type FuncMap = HashMap<Func>;
+/**
+ * Redux action
  */
 type Action<P = any> = {
+  /**
+   * Action type
+   */
   type: string;
-  payload?: P;
+  /**
+   * Action payload
+   */
+  payload: P;
+};
+
+type WithType = {
+  /**
+   * Action type
+   */
+  type: string;
 };
 
 /**
- * Action creator function with action type
+ * Action creator with type
  */
-type ActionCreator<C extends Func> = { type: string } & ((
-  ...args: Parameters<C>
-) => Action<ReturnType<C>>);
-type Equals<A, B, T, F> = A extends B ? (B extends A ? T : F) : F;
+type ActionCreator<PC extends Func> = ((
+  ...args: Parameters<PC>
+) => Action<ReturnType<PC>>) &
+  WithType;
 
 /**
- * Stages name list
+ * Builder params
  */
-type StagesList = ReadonlyArray<string | number>;
+type Params<S, C extends Func = any> = {
+  name: string;
+  stages: S;
+  create: ActionCreator<C>;
+};
+/**
+ * Define stage
+ */
+type Stage<S> = <H extends Func = any, N extends string = any>(
+  name: N,
+  handler?: H
+) => Actions<S & { [P in N]: H }>;
 
 /**
- * Hash map of some values
+ * Build action creators
  */
-type HashMap<T> = {
-  [x: string]: T;
+type Build<S extends FuncMap> = <H extends Func = any>(
+  handler?: H
+) => ActionCreator<H> & { [P in keyof S]: ActionCreator<S[P]> };
+
+/**
+ * Builder actions
+ */
+type Actions<S extends FuncMap> = {
+  stage: Stage<S>;
+  build: Build<S>;
 };
 
-type MakeResult<
-  InitialCreator extends Func = any,
-  StagesHashMap extends HashMap<Func> = any,
-  Stages extends ReadonlyArray<string | number> = any[]
-> = ActionCreator<InitialCreator> &
-  { [P in keyof StagesHashMap]: ActionCreator<StagesHashMap[P]> } &
-  { [K in Stages[number]]: ActionCreator<any> };
+/**
+ * Action creator maker
+ */
+type Make = (name: string) => Actions<{}>;
 
-export { Func, HashMap, StagesList, Action, ActionCreator, MakeResult };
+export { Make, ActionCreator, Action, HashMap, Func, Build, Stage, FuncMap, Params };
