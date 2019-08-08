@@ -21,7 +21,7 @@ const build = <S extends FuncMap>(params: Params<S>): Build<S> => <
   const result: Result = function(...args: Parameters<H>) {
     return {
       type: params.name,
-      payload: create ? create(...args) : null
+      payload: create ? create(...args) : args[0]
     };
   } as Result;
 
@@ -32,14 +32,13 @@ const build = <S extends FuncMap>(params: Params<S>): Build<S> => <
     const stage = function(...args) {
       return {
         type,
-        payload: create ? create(...args) : null
+        payload: create ? create(...args) : args[0]
       };
     };
 
     stage.type = type;
 
     (result as any)[key] = stage;
-
   });
 
   return result;

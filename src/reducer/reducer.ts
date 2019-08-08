@@ -1,11 +1,13 @@
-import { produce } from "immer";
+import { produce, immerable } from "immer";
 import { Reducer, Build, Params, On } from "./types";
 import { Action, ActionCreator, make } from "../actions";
+import { createStore, combineReducers } from "redux";
 
 /**
  * Build reducere
  */
 const build = <S, A extends Action>(params: Params<S>): Build<S, A> => () => {
+  params.defaultState[immerable] = true;
   return (state: S = params.defaultState, action: A) => {
     const match = params.handlers[action.type];
 

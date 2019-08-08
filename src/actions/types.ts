@@ -5,7 +5,7 @@ type HashMap<T> = { [x: string]: T };
 /**
  * Simple function
  */
-type Func = (...args) => any;
+type Func<P extends any[] = any[]> = (...args: P) => any;
 /**
  * Function hash map
  */
@@ -75,4 +75,14 @@ type Actions<S extends FuncMap> = {
  */
 type Make = (name: string) => Actions<{}>;
 
-export { Make, ActionCreator, Action, HashMap, Func, Build, Stage, FuncMap, Params };
+export {
+  Make,
+  ActionCreator,
+  Action,
+  HashMap,
+  Func,
+  Build,
+  Stage,
+  FuncMap,
+  Params
+};
