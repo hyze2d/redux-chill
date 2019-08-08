@@ -7,7 +7,10 @@ import { createStore, combineReducers } from "redux";
  * Build reducere
  */
 const build = <S, A extends Action>(params: Params<S>): Build<S, A> => () => {
-  params.defaultState[immerable] = true;
+  if (params.defaultState) {
+    params.defaultState[immerable] = true;
+  }
+
   return (state: S = params.defaultState, action: A) => {
     const match = params.handlers[action.type];
 
