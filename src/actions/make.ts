@@ -1,80 +1,59 @@
-import {
-  Make,
-  Stage,
-  Build,
-  FuncMap,
-  Func,
-  ActionCreator,
-  Params
-} from "./types";
+const stage = (result, stages) => (...args) => {
+  if (args.length == 1) {
+    const [arg] = args;
 
-/**
- * Build creator
- */
-const build = <S extends FuncMap>(params: Params<S>): Build<S> => <
-  H extends Func = any
->(
-  create: H
-) => {
-  type Result = ActionCreator<H> & { [P in keyof S]: ActionCreator<S[P]> };
+    if (typeof arg == "function") {
+      const create = (...payload) => ({
+        type: result.type,
+        payload: arg(...payload)
+      });
 
-  const result: Result = function(...args: Parameters<H>) {
-    return {
-      type: params.name,
-      payload: create ? create(...args) : args[0]
-    };
-  } as Result;
+      create["type"] = result.type;
+      create["stage"] = stage(create, stages);
 
-  result.type = params.name;
+      Object.values(stages).map(([key, value]) => {
+        create[key] = value;
+      });
 
-  Object.entries(params.stages).map(([key, create]) => {
-    const type = params.name + " " + key;
-    const stage = function(...args) {
-      return {
-        type,
-        payload: create ? create(...args) : args[0]
-      };
-    };
+      return create;
+    }
 
-    stage.type = type;
+    if (typeof arg == "string") {
+      stages[arg] = result[arg] = payload => ({
+        type: result.type + " " + arg,
+        payload
+      });
 
-    (result as any)[key] = stage;
+      return result;
+    }
+  }
+
+  if (args.length == 2) {
+    const [name, create] = args;
+
+    stages[name] = result[name] = (...payload) => ({
+      type: result.type + " " + name,
+      payload: create(...payload)
+    });
+
+    return result;
+  }
+};
+
+const make = (name: string) => {
+  const result = payload => ({
+    type: name,
+    payload
   });
+  result.type = name;
+  result.stage = stage(result, {});
 
   return result;
 };
 
-/**
- * Define action stage
- */
-const stage = <S extends FuncMap>(params: Params<S>): Stage<S> => <
-  H extends Func = any,
-  N extends string = any
->(
-  name: N,
-  create: H
-) => {
-  params.stages[name] = create as any;
-
-  return {
-    stage: stage<S>(params),
-    build: build<S>(params)
-  };
-};
-
-/**
- * Define action creator with stages
- */
-const make: Make = (name: string) => {
-  const params: Params<{}> = {
-    name,
-    stages: {},
-    create: null
-  };
-  return {
-    stage: stage<{}>(params),
-    build: build<{}>(params)
-  };
-};
-
 export { make };
+
+const get = make("[something] get")
+  .stage(id => id)
+  .stage("success", data => data)
+  .stage("failure");
