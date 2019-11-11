@@ -1,3 +1,3 @@
 export { reducer, Payload } from "./reducer";
-export { Saga, run, SagaAction } from "./saga";
+export { Saga, run } from "./saga";
 export { make } from "./actions";

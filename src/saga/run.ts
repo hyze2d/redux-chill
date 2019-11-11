@@ -25,7 +25,10 @@ const run = (middleware: SagaMiddleware, sagas: Object[], context?: any) => {
           });
         });
       } else {
-        result.push(method.bind(saga));
+        const handle = method.bind(saga);
+        result.push(function*() {
+          return yield call(handle, context);
+        });
       }
     });
   });
@@ -35,6 +38,4 @@ const run = (middleware: SagaMiddleware, sagas: Object[], context?: any) => {
   return result;
 };
 
-type SagaAction<T extends Func> = ReturnType<T>;
-
-export { run, SagaAction };
+export { run };

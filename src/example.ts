@@ -2,7 +2,7 @@
 import { Saga, run } from "./saga";
 import { make } from "./actions";
 import { Payload, reducer } from "./reducer";
-import { call, put } from "redux-saga/effects";
+import { call, put, takeLatest, takeEvery } from "redux-saga/effects";
 import createSagaMiddleware from "redux-saga";
 import { createStore as reduxCreateStore, applyMiddleware } from "redux";
 
