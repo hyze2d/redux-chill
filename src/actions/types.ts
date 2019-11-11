@@ -1,4 +1,11 @@
+/**
+ * Any function
+ */
 type Func<P extends any[] = any[]> = (...args: P) => any;
+
+/**
+ * Generic standart action
+ */
 type Action<P = any> = {
   /**
    * Action type
@@ -10,47 +17,67 @@ type Action<P = any> = {
   payload: P;
 };
 
+/**
+ * Action creator with type
+ */
 type ActionCreator<P extends any[], R = any> = {
   type: string;
   (...args: P): Action<R>;
 };
 
+/**
+ * Mapped params and RT to action creator field
+ */
+type ExtendedStages<N extends string, Params extends any[], R> = {
+  [P in N]: ActionCreator<Params, R>;
+};
 
-interface Stage<C extends (...args) => any, S = {}> {
+/**
+ * Stage function
+ */
+type Stage<C extends (...args) => any, S = {}> = {
+  /**
+   * Define root action creator payload processor
+   */
   <CR extends (...args) => any>(create: CR): Result<CR, S> & S;
-  <N extends string>(name: N): Result<
-    C,
+  /**
+   * Define stage without params for payload
+   */
+  <N extends string>(name: N): Result<C, S & ExtendedStages<N, any[], null>> &
     S &
-      {
-        [P in N]: ActionCreator<any[], null>;
-      }
-  > &
-    S &
-    {
-      [P in N]: ActionCreator<any[], null>;
-    };
+    ExtendedStages<N, any[], null>;
+  /**
+   * Define stage with params payload params processor
+   */
   <PC extends (...args) => any, N extends string>(name: N, create: PC): Result<
     C,
-    S &
-      {
-        [P in N]: ActionCreator<Parameters<PC>, ReturnType<PC>>;
-      }
+    S & ExtendedStages<N, Parameters<PC>, ReturnType<PC>>
   > &
     S &
-    {
-      [P in N]: ActionCreator<Parameters<PC>, ReturnType<PC>>;
-    };
-}
+    ExtendedStages<N, Parameters<PC>, ReturnType<PC>>;
+};
 
-interface Result<C extends (...args) => any, S = {}> {
+/**
+ * Root action creator with extend stage function
+ */
+type Result<C extends (...args) => any, S = {}> = {
+  /**
+   * Function with params which creates action object
+   */
+  (...args: Parameters<C>): Action<ReturnType<C>>;
+  /**
+   * Action type
+   */
   type: string;
-  (...args: Parameters<C>): {
-    type: string;
-    payload: ReturnType<C>;
-  };
+  /**
+   * Stage method which returns new instance with new defined stage
+   */
   stage: Stage<C, S>;
-}
+};
 
+/**
+ * Make action creator with stage extending possibility
+ */
 type Make = <T = any>(name: string) => Result<(payload: T) => T>;
 
 export { Make, Action, ActionCreator, Func };
