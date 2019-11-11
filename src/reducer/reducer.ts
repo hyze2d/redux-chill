@@ -7,11 +7,14 @@ import { Reducer } from "./types";
  * Create reducer with add handler .on method
  */
 const createReducer = (defaultState, handlers = []) => {
+  /**
+   * Reducer which will handle actions via handlers list
+   */
   const result = (state = defaultState, action) => {
-    const match = handlers.filter(one => {
-      return one.types.some(actionType => {
+    const match = handlers.filter(one =>
+      one.types.some(actionType => {
         // NOTE: currently supported only functions with .type field
-        
+
         // if (typeof actionType == "string") {
         //   return action.type == actionType;
         // }
@@ -19,9 +22,8 @@ const createReducer = (defaultState, handlers = []) => {
         if ("type" in actionType) {
           return action.type == actionType.type;
         }
-      });
-    });
-
+      })
+    );
 
     if (!match || !match.length) return state;
 
@@ -32,6 +34,9 @@ const createReducer = (defaultState, handlers = []) => {
     });
   };
 
+  /**
+   * Define new handler
+   */
   result.on = (actions, handle) =>
     createReducer(defaultState, [
       ...handlers,
@@ -48,6 +53,9 @@ const createReducer = (defaultState, handlers = []) => {
  * Create reducer with default state
  */
 const reducer: Reducer = <S>(defaultState: S) => {
+  /**
+   * Required to make class instances immutable when processing with immer
+   */
   defaultState[immerable] = true;
 
   return createReducer(defaultState);
