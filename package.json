@@ -1,6 +1,6 @@
 {
   "name": "redux-chill",
-  "version": "2.0.4",
+  "version": "3.0.0",
   "description": "",
   "scripts": {
     "prepublish": "tsc",
@@ -11,14 +11,14 @@
     "dist"
   ],
   "dependencies": {
-    "immer": "^3.1.3",
+    "immer": "^5.0.0",
     "redux": "^4.0.4",
-    "redux-saga": "^1.0.5"
+    "redux-saga": "^1.1.3"
   },
   "devDependencies": {
     "@types/redux": "^3.6.0",
     "@types/redux-saga": "^0.10.5",
-    "ts-node": "^8.4.1",
+    "ts-node": "^8.5.0",
     "typescript": "^3.7.2"
   },
   "repository": {
