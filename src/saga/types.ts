@@ -7,8 +7,7 @@ type SagaEffect = typeof takeLatest | typeof takeEvery;
 /**
  * Action type description
  */
-type PatternOption = string | { type: string };
-
+type Pattern = string | { type: string };
 /**
  * Saga metadata for decorators
  */
@@ -18,15 +17,8 @@ class SagaMetdata {
    */
   public workers: {
     effect?: SagaEffect;
-    pattern?: PatternOption;
+    pattern?: Pattern;
     name: string;
-  }[] = [];
-  /**
-   * Context getters
-   */
-  public contexts: {
-    name: string;
-    prop?: string | ((context) => any);
   }[] = [];
 }
 
@@ -35,4 +27,4 @@ class SagaMetdata {
  */
 const SAGA_METAKEY = "@SAGA_METAKEY";
 
-export { SagaEffect, PatternOption, SagaMetdata, SAGA_METAKEY };
+export { SagaEffect, Pattern, SagaMetdata, SAGA_METAKEY };

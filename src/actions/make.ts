@@ -1,4 +1,13 @@
-const stage = (result, stages) => (...args) => {
+import { Make } from "./types";
+
+/**
+ * Define action stage
+ */
+const stage = (
+  result,
+  stages,
+  createRootPayload = (...args: any[]) => null
+) => (...args) => {
   if (args.length == 1) {
     const [arg] = args;
 
@@ -9,9 +18,9 @@ const stage = (result, stages) => (...args) => {
       });
 
       create["type"] = result.type;
-      create["stage"] = stage(create, stages);
+      create["stage"] = stage(create, { ...stages }, arg);
 
-      Object.values(stages).map(([key, value]) => {
+      Object.entries(stages).map(([key, value]) => {
         create[key] = value;
       });
 
@@ -19,28 +28,64 @@ const stage = (result, stages) => (...args) => {
     }
 
     if (typeof arg == "string") {
-      stages[arg] = result[arg] = payload => ({
-        type: result.type + " " + arg,
-        payload
+      const type = result.type + " " + arg;
+      const _stages = {
+        ...stages
+      };
+      const create = (...payload) => ({
+        type: result.type,
+        payload: createRootPayload(...payload)
       });
 
-      return result;
+      create["type"] = result.type;
+
+      _stages[arg] = create[arg] = payload => ({
+        type,
+        payload
+      });
+      _stages[arg].type = create[arg].type = type;
+
+      create["stage"] = stage(create, _stages, createRootPayload);
+
+      Object.entries(_stages).map(([key, value]) => {
+        create[key] = value;
+      });
+
+      return create;
     }
   }
 
   if (args.length == 2) {
-    const [name, create] = args;
-
-    stages[name] = result[name] = (...payload) => ({
-      type: result.type + " " + name,
-      payload: create(...payload)
+    const [name, createPayload] = args;
+    const _stages = {
+      ...stages
+    };
+    const type = result.type + " " + name;
+    const create = (...payload) => {
+      return {
+        type: result.type,
+        payload: createRootPayload(...payload)
+      };
+    };
+    create["type"] = result.type;
+    _stages[name] = create[name] = (...payload) => ({
+      type,
+      payload: createPayload(...payload)
     });
 
-    return result;
+    _stages[name].type = create[name].type = type;
+
+    create["stage"] = stage(create, _stages, createRootPayload);
+
+    Object.entries(_stages).map(([key, value]) => {
+      create[key] = value;
+    });
+
+    return create;
   }
 };
 
-const make = (name: string) => {
+const make: Make = (name: string) => {
   const result = payload => ({
     type: name,
     payload
@@ -48,12 +93,7 @@ const make = (name: string) => {
   result.type = name;
   result.stage = stage(result, {});
 
-  return result;
+  return result as any;
 };
 
 export { make };
-
-const get = make("[something] get")
-  .stage(id => id)
-  .stage("success", data => data)
-  .stage("failure");

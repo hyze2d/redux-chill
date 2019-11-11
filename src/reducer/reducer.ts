@@ -1,64 +1,56 @@
 import { produce, immerable } from "immer";
-import { Reducer, Build, Params, On } from "./types";
 import { Action, ActionCreator, make } from "../actions";
 import { createStore, combineReducers } from "redux";
+import { Reducer } from "./types";
 
 /**
- * Build reducere
+ * Create reducer with add handler .on method
  */
-const build = <S, A extends Action>(params: Params<S>): Build<S, A> => () => {
-  if (params.defaultState) {
-    params.defaultState[immerable] = true;
-  }
+const createReducer = (defaultState, handlers = []) => {
+  const result = (state = defaultState, action) => {
+    const match = handlers.filter(one => {
+      return one.types.some(actionType => {
+        // NOTE: currently supported only functions with .type field
+        
+        // if (typeof actionType == "string") {
+        //   return action.type == actionType;
+        // }
 
-  return (state: S = params.defaultState, action: A) => {
-    const match = params.handlers[action.type];
+        if ("type" in actionType) {
+          return action.type == actionType.type;
+        }
+      });
+    });
 
-    if (match) {
-      const result = produce(
-        state,
-        (draft: S) => void match.handle(draft, action.payload)
-      );
 
-      return result;
-    }
+    if (!match || !match.length) return state;
 
-    return state;
+    return produce(state, draft => {
+      match.map(item => {
+        item.handle(draft, action.payload);
+      });
+    });
   };
+
+  result.on = (actions, handle) =>
+    createReducer(defaultState, [
+      ...handlers,
+      {
+        types: Array.isArray(actions) ? actions : [actions],
+        handle
+      }
+    ]);
+
+  return result;
 };
 
 /**
- * Define handler
- */
-const on = <S, A extends Action>(params): On<S, A> => <
-  H extends ActionCreator<any>
->(
-  action: H,
-  handle: (state: S, payload: ReturnType<H>["payload"]) => any
-) => {
-  params.handlers[action.type] = {
-    action,
-    handle
-  };
-  return {
-    on: on<S, A | ReturnType<H>>(params),
-    build: build<S, A | ReturnType<H>>(params)
-  };
-};
-
-/**
- * Define reducer
+ * Create reducer with default state
  */
 const reducer: Reducer = <S>(defaultState: S) => {
-  const params: Params<S> = {
-    defaultState,
-    handlers: {}
-  };
+  defaultState[immerable] = true;
 
-  return {
-    on: on(params),
-    build: build<S, any>(params)
-  };
+  return createReducer(defaultState);
 };
 
 export { reducer };

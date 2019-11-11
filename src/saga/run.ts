@@ -14,20 +14,6 @@ const run = (middleware: SagaMiddleware, sagas: Object[], context?: any) => {
 
     if (!metadata) return;
 
-    metadata.contexts.map(item => {
-      if (item.prop) {
-        if (typeof item.prop == "string") {
-          saga[item.name] = context[item.prop];
-        }
-
-        if (typeof item.prop == "function") {
-          saga[item.name] = item.prop(context);
-        }
-      } else {
-        saga[item.name] = context;
-      }
-    });
-
     metadata.workers.map(worker => {
       const method = saga[worker.name];
       const { effect, pattern } = worker;

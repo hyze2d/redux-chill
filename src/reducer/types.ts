@@ -1,46 +1,29 @@
-import { ActionCreator, Func } from "../actions";
+import { ActionCreator, Func, make } from "../actions";
 
 /**
  * Extract payload from creator
  */
 type Payload<T extends ActionCreator<any>> = ReturnType<T>["payload"];
 
-/**
- * Builder params
- */
-type Params<S> = {
-  defaultState: S;
-  handlers: {
-    [x: string]: {
-      action: ActionCreator<any>;
-      handle: (state: S, payload) => any;
-    };
-  };
-};
-/**
- * Define handler
- */
-type On<S, A> = <H extends ActionCreator<any>>(
-  action: H,
-  handle: (state: S, payload: Payload<H>) => any
-) => Actions<S, A | ReturnType<H>>;
+type HandlePayload<T> = T extends ActionCreator<any, any>
+  ? Payload<T>
+  : T extends ReadonlyArray<ActionCreator<any, any>>
+  ? Payload<T[number]>
+  : any;
 
-/**
- * Build reducer
- */
-type Build<S, A> = () => (state: S, action: A) => S;
+type ExtendableReducer<S, A = any> = {
+  (state: S, action: A): S;
 
-/**
- * Builder actions
- */
-type Actions<S, A> = {
-  on: On<S, A>;
-  build: Build<S, A>;
+  on: <
+    T extends ActionCreator<any, any> | ReadonlyArray<ActionCreator<any, any>>
+  >(
+    types: T,
+    handle: (state: S, payload: HandlePayload<T>) => any
+  ) => ExtendableReducer<S, A>;
 };
 
-/**
- * Define reducer
- */
-type Reducer = <S>(defaultState?: S) => Actions<S, never>;
+type Reducer = {
+  <S>(defaultState: S): ExtendableReducer<S>;
+};
 
-export { Reducer, Build, On, Params, Actions, Payload };
+export { Reducer, Payload };
