@@ -69,6 +69,10 @@ const createStore = () => {
   return store;
 };
 
+
 const store = createStore();
 
-store.dispatch(get(123));
+store.dispatch({
+  type: "dsad",
+  payload: "dsa"
+});

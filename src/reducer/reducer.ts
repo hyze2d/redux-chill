@@ -1,7 +1,5 @@
 import { produce, immerable } from "immer";
-import { Action, ActionCreator, make } from "../actions";
-import { createStore, combineReducers } from "redux";
-import { Reducer } from "./types";
+import { CreateReducer } from "./types";
 
 /**
  * Create reducer with add handler .on method
@@ -50,7 +48,7 @@ const createReducer = (defaultState, handlers = []) => {
 /**
  * Create reducer with default state
  */
-const reducer: Reducer = <S>(defaultState: S) => {
+const reducer: CreateReducer = <S>(defaultState: S) => {
   /**
    * Required to make class instances immutable when processing with immer
    */
@@ -58,13 +56,5 @@ const reducer: Reducer = <S>(defaultState: S) => {
 
   return createReducer(defaultState);
 };
-
-const kek = make("kek")
-  .stage((id: number) => id)
-  .stage("success", () => "sdasd");
-
-reducer({}).on([kek], (state, payload) => {
-  
-});
 
 export { reducer };

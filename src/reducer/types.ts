@@ -5,29 +5,23 @@ import { ActionCreator, Func, make, Action } from "../actions";
  */
 type Payload<T extends ActionCreator<any>> = ReturnType<T>["payload"];
 
-type MixedTypesList = any;
-type TypesList = any;
-type StringList = any;
-type SingleStringType = any;
-type SingleType = any;
-
 /**
  * Handle paload method with options to handle single or multiple actions
  */
-type HandlePayload<T> = T extends ActionCreator<any, any>
-  ? Payload<T>
+type HandleAction<T> = T extends ActionCreator<any, any>
+  ? Action<Payload<T>>
   : T extends string
-  ? unknown
+  ? Action<unknown>
   : T extends string[]
-  ? unknown
+  ? Action<unknown>
   : T extends ReadonlyArray<ActionCreator>
-  ? Payload<T[number]>
-  : unknown;
+  ? Action<Payload<T[number]>>
+  : Action<unknown>;
 
 /**
  * Reducer with .on method which provides new instance with added handler
  */
-type ExtendableReducer<S, A = any> = {
+type ExtendableReducer<S, A> = {
   /**
    * Simple reducer which accepts state and actions and return (not)updated state
    */
@@ -44,15 +38,15 @@ type ExtendableReducer<S, A = any> = {
       | string[]
   >(
     type: T,
-    handle: (state: S, payload: HandlePayload<T>) => any
-  ) => ExtendableReducer<S, A>;
+    handle: (state: S, payload: HandleAction<T>["payload"]) => any
+  ) => ExtendableReducer<S, A | HandleAction<T>>;
 };
 
 /**
  * Reducer function for extendable reducer generation
  */
-type Reducer = {
-  <S>(defaultState: S): ExtendableReducer<S>;
+type CreateReducer = {
+  <S>(defaultState: S): ExtendableReducer<S, { type: string }>;
 };
 
-export { Reducer, Payload };
+export { CreateReducer, Payload };
