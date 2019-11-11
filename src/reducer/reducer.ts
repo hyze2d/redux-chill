@@ -13,11 +13,9 @@ const createReducer = (defaultState, handlers = []) => {
   const result = (state = defaultState, action) => {
     const match = handlers.filter(one =>
       one.types.some(actionType => {
-        // NOTE: currently supported only functions with .type field
-
-        // if (typeof actionType == "string") {
-        //   return action.type == actionType;
-        // }
+        if (typeof actionType == "string") {
+          return action.type == actionType;
+        }
 
         if ("type" in actionType) {
           return action.type == actionType.type;
@@ -60,5 +58,13 @@ const reducer: Reducer = <S>(defaultState: S) => {
 
   return createReducer(defaultState);
 };
+
+const kek = make("kek")
+  .stage((id: number) => id)
+  .stage("success", () => "sdasd");
+
+reducer({}).on([kek], (state, payload) => {
+  
+});
 
 export { reducer };

@@ -20,7 +20,7 @@ type Action<P = any> = {
 /**
  * Action creator with type
  */
-type ActionCreator<P extends any[], R = any> = {
+type ActionCreator<P extends any[] = any, R = any> = {
   type: string;
   (...args: P): Action<R>;
 };
