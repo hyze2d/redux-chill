@@ -23,12 +23,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/starvinmelon/redux-chill.git"
+    "url": "git+https://github.com/zarxregis/redux-chill.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/starvinmelon/redux-chill/issues"
+    "url": "https://github.com/zarxregis/redux-chill/issues"
   },
-  "homepage": "https://github.com/starvinmelon/redux-chill#readme"
+  "homepage": "https://github.com/zarxregis/redux-chill#readme"
 }
