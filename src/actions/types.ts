@@ -78,6 +78,9 @@ type Result<C extends (...args) => any, S = {}> = {
 /**
  * Make action creator with stage extending possibility
  */
-type Make = <T = any>(name: string) => Result<(payload: T) => T>;
+type Make = <T = any>(name: string) => Result<(payload?: T) => T>;
 
 export { Make, Action, ActionCreator, Func };
+
+
+

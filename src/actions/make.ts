@@ -63,3 +63,4 @@ function stage(result, stages, createRootPayload = (...args: any[]) => null) {
 const make: Make = (name: string) => rebuild(() => null, name, {}) as any;
 
 export { make };
+
